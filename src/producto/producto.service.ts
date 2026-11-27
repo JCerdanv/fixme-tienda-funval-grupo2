@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateProductoDto } from './dto/create-producto.dto.js';
 import { UpdateProductoDto } from './dto/update-producto.dto.js';
@@ -40,11 +40,27 @@ export class ProductoService {
 
   async update(id: number, data: UpdateProductoDto) {
     await this.findOne(id);
+    if (data.categoriaId) {
+      const categoria = await this.prisma.categoria.findUnique({
+        where: { id: data.categoriaId },
+      });
+      if (!categoria) {
+        throw new NotFoundException(`La categoría ${data.categoriaId} no existe`);
+      }
+    }
     return this.prisma.producto.update({ where: { id }, data });
   }
 
   async remove(id: number) {
     await this.findOne(id);
+    const pedidosConProducto = await this.prisma.detallePedido.count({
+      where: { productoId: id },
+    });
+    if (pedidosConProducto > 0) {
+      throw new ConflictException(
+        'No se puede eliminar un producto asociado a pedidos existentes',
+      );
+    }
     return this.prisma.producto.delete({ where: { id } });
   }
 }
