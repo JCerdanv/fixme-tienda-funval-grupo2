@@ -1,4 +1,4 @@
-# Errores encontrados en categoria (jorge Romainville)
+# Errores encontrados en producto (jorge Romainville)
 
 src/producto/app.module.ts
 
