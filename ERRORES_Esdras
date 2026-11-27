@@ -1,0 +1,5 @@
+# Errores encontrados en categoria (Esdras Blanco)
+
+src/categoria/dto/create-categoria.dto.ts
+
+- Faltaba un corchete para cerrar la clase CreateCategoriaDto
